@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Calendar - Abril 2026</title>
+    <style>
+        :root {
+            --bg-main: #FAF7F2;
+            --border-color: #A0A0A0;
+            --text-main: #111111;
+            
+            /* Colores de Formatos (Plantilla Camba.jpg) */
+            --p1-yellow: #FBE49E; /* Reel */
+            --p2-green: #C9ECD7;  /* Historia */
+            --p4-pink: #F5C6DC;   /* Carrucel */
+            --p5-blue: #B7DCF0;   /* Motion */
+
+            /* Colores de Estado Personalizados */
+            --status-proceso: #fbc19e;    /* En proceso */
+            --status-completado: #c3ecc1; /* Completado */
+            --status-incompleto: #ffbdbd; /* Incompleto */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .calendar-container {
+            width: 100%;
+            max-width: 1400px;
+            background-color: var(--bg-main);
+        }
+
+        /* HEADER LAYOUT */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .main-title {
+            font-size: 5.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 0.9;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-top: 5px;
+        }
+
+        .badge-calendar {
+            background-color: #FF5EAA;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 5px 15px;
+            border-radius: 4px;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .week-oval {
+            border: 2.5px solid #E15B56;
+            color: #E15B56;
+            font-size: 1.6rem;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            padding: 8px 30px;
+            border-radius: 50% / 50%;
+            transform: rotate(-3deg);
+            display: inline-block;
+        }
+
+        /* METADATA / LEGEND */
+        .header-right {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 40px;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.4);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .legend-col h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .platform-pills {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 110px;
+        }
+
+        .pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .p1 { background-color: var(--p1-yellow) !important; }
+        .p2 { background-color: var(--p2-green) !important; }
+        .p4 { background-color: var(--p4-pink) !important; }
+        .p5 { background-color: var(--p5-blue) !important; }
+
+        /* Clases de Estados */
+        .st-proceso { background-color: var(--status-proceso) !important; }
+        .st-completado { background-color: var(--status-completado) !important; }
+        .st-incompleto { background-color: var(--status-incompleto) !important; }
+
+        .status-list-horizontal {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-align: center;
+            color: #111111;
+        }
+
+        /* GRID / TABLE STYLE */
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            table-layout: fixed;
+            background: #FFFFFF;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .calendar-table th, .calendar-table td {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        /* Configuración de anchos de columnas */
+        .calendar-table th:nth-child(1) { width: 12%; } /* Día */
+        .calendar-table th:nth-child(2) { width: 10%; } /* Fecha */
+        .calendar-table th:nth-child(3) { width: 48%; } /* Enfoque */
+        .calendar-table th:nth-child(4) { width: 15%; } /* Estado */
+        .calendar-table th:nth-child(5) { width: 15%; } /* Formato */
+
+        .calendar-table th {
+            font-weight: 700;
+            font-size: 1rem;
+            background-color: #111111;
+            color: #FFFFFF;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .calendar-table td {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #222;
+            text-align: center;
+        }
+
+        /* Alineación especial para el enfoque */
+        .calendar-table td.enfoque-cell {
+            text-align: left;
+            font-weight: 500;
+            cursor: text;
+        }
+
+        .calendar-table td.clickable-cell {
+            cursor: pointer;
+            user-select: none;
+            transition: opacity 0.15s ease;
+        }
+
+        .calendar-table td.clickable-cell:hover {
+            opacity: 0.85;
+        }
+
+        /* Estilo interactivo al enfocar edición */
+        [contenteditable="true"]:focus {
+            outline: 2px dashed #FF5EAA;
+            background-color: rgba(254, 247, 242, 0.9);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calendar-container">
+        
+        <div class="header">
+            <div class="header-left">
+                <div class="main-title" contenteditable="true">Abril 2026</div>
+                <div class="title-row">
+                    <div class="badge-calendar" contenteditable="true">Plan de<br>Contenido</div>
+                    <div class="week-oval" contenteditable="true">Primera Semana</div>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="legend-col">
+                    <h3>FORMATOS</h3>
+                    <div class="platform-pills">
+                        <span class="pill p1" contenteditable="true">Reel</span>
+                        <span class="pill p2" contenteditable="true">Historia</span>
+                        <span class="pill p4" contenteditable="true">Carrucel</span>
+                        <span class="pill p5" contenteditable="true">Motion</span>
+                    </div>
+                </div>
+                <div class="legend-col">
+                    <h3>ESTADOS</h3>
+                    <div class="status-list-horizontal">
+                        <span class="status-pill st-proceso">En Proceso</span>
+                        <span class="status-pill st-completado">Completado</span>
+                        <span class="status-pill st-incompleto">Incompleto</span>
+                    </div>
+                </div>
+                <div class="legend-col" style="max-width: 250px;">
+                    <h3>NOTAS DE CONTROL</h3>
+                    <p style="font-size: 0.8rem; color: #555; line-height: 1.4;">Haz un clic para modificar los textos. Haz <strong>doble clic</strong> en Estado o Formato para cambiar su diseño (ambos incluyen opción vacía).</p>
+                </div>
+            </div>
+        </div>
+
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th>Día</th>
+                    <th>Fecha</th>
+                    <th>Enfoque del Contenido</th>
+                    <th>Estado</th>
+                    <th>Formato</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td contenteditable="true">Lunes</td>
+                    <td contenteditable="true">30/03</td>
+                    <td class="enfoque-cell" contenteditable="true">Tips estratégicos para optimizar el alcance orgánico semanal.</td>
+                    <td class="clickable-cell st-proceso" data-type="estado">En Proceso</td>
+                    <td class="clickable-cell p1" data-type="formato">Reel</td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">Martes</td>
+                    <td contenteditable="true">31/03</td>
+                    <td class="enfoque-cell" contenteditable="true">Detrás de cámaras: Producción y flujo de diseño visual.</td>
+                    <td class="clickable-cell st-completado" data-type="estado">Completado</td>
+                    <td class="clickable-cell p2" data-type="formato">Historia</td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">Miércoles</td>
+                    <td contenteditable="true">01/04</td>
+                    <td class="enfoque-cell" contenteditable="true">Tutorial paso a paso: Cómo estructurar plantillas interactivas.</td>
+                    <td class="clickable-cell st-incompleto" data-type="estado">Incompleto</td>
+                    <td class="clickable-cell p4" data-type="formato">Carrucel</td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">Jueves</td>
+                    <td contenteditable="true">02/04</td>
+                    <td class="enfoque-cell" contenteditable="true">Análisis de métricas mensuales y toma de decisiones basadas en datos.</td>
+                    <td class="clickable-cell st-proceso" data-type="estado">En Proceso</td>
+                    <td class="clickable-cell p5" data-type="formato">Motion</td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">Viernes</td>
+                    <td contenteditable="true">03/04</td>
+                    <td class="enfoque-cell" contenteditable="true">Preguntas y respuestas con la comunidad en directo.</td>
+                    <td class="clickable-cell st-completado" data-type="estado">Completado</td>
+                    <td class="clickable-cell p2" data-type="formato">Historia</td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">Sábado</td>
+                    <td contenteditable="true">04/04</td>
+                    <td class="enfoque-cell" contenteditable="true">Resumen de las mejores herramientas de automatización de la semana.</td>
+                    <td class="clickable-cell st-proceso" data-type="estado">En Proceso</td>
+                    <td class="clickable-cell p1" data-type="formato">Reel</td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">Domingo</td>
+                    <td contenteditable="true">05/04</td>
+                    <td class="enfoque-cell" contenteditable="true">Frase inspiradora y descanso programado de la comunidad.</td>
+                    <td class="clickable-cell st-completado" data-type="estado">Completado</td>
+                    <td class="clickable-cell p4" data-type="formato">Carrucel</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <script>
+        const clickCells = document.querySelectorAll('.calendar-table td.clickable-cell');
+
+        clickCells.forEach(cell => {
+            cell.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                const cellType = this.getAttribute('data-type');
+
+                if (cellType === 'estado') {
+                    // Ciclo de Estados con nuevos colores asignados
+                    const estados = [
+                        { text: 'En Proceso', class: 'st-proceso' },
+                        { text: 'Completado', class: 'st-completado' },
+                        { text: 'Incompleto', class: 'st-incompleto' },
+                        { text: '', class: '' } // Opción Vacía
+                    ];
+                    
+                    let currentText = this.innerText.trim();
+                    let currentIndex = estados.findIndex(est => est.text === currentText);
+                    
+                    if (currentIndex === -1) currentIndex = 3;
+
+                    let nextIndex = (currentIndex + 1) % estados.length;
+
+                    estados.forEach(est => {
+                        if (est.class) this.classList.remove(est.class);
+                    });
+                    
+                    this.innerText = estados[nextIndex].text;
+                    if (estados[nextIndex].class) {
+                        this.classList.add(estados[nextIndex].class);
+                    }
+
+                } else if (cellType === 'formato') {
+                    // Ciclo de Formatos incluyendo ahora la opción vacía al final
+                    const formatos = [
+                        { text: 'Reel', class: 'p1' },
+                        { text: 'Historia', class: 'p2' },
+                        { text: 'Carrucel', class: 'p4' },
+                        { text: 'Motion', class: 'p5' },
+                        { text: '', class: '' } // Opción Vacía
+                    ];
+
+                    let currentText = this.innerText.trim();
+                    let currentIndex = formatos.findIndex(form => form.text === currentText);
+                    
+                    if (currentIndex === -1) currentIndex = 4;
+
+                    let nextIndex = (currentIndex + 1) % formatos.length;
+
+                    formatos.forEach(form => {
+                        if (form.class) this.classList.remove(form.class);
+                    });
+                    
+                    this.innerText = formatos[nextIndex].text;
+                    if (formatos[nextIndex].class) {
+                        this.classList.add(formatos[nextIndex].class);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
