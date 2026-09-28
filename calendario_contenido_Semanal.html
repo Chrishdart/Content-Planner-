@@ -1,25 +1,26 @@
+
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Content Calendar - Abril 2026</title>
+    <title>Content Calendar - Plan Mensual Completo 2026</title>
     <style>
         :root {
             --bg-main: #FAF7F2;
             --border-color: #A0A0A0;
             --text-main: #111111;
             
-            /* Colores de Formatos (Plantilla Camba.jpg) */
+            /* Colores de Formatos */
             --p1-yellow: #FBE49E; /* Reel */
             --p2-green: #C9ECD7;  /* Historia */
             --p4-pink: #F5C6DC;   /* Carrucel */
             --p5-blue: #B7DCF0;   /* Motion */
+            --p6-purple: #A99CF9;  /* Pauta (NUEVO) */
 
-            /* Colores de Estado Personalizados */
-            --status-proceso: #fbc19e;    /* En proceso */
-            --status-completado: #c3ecc1; /* Completado */
-            --status-incompleto: #ffbdbd; /* Incompleto */
+            /* Colores de Estado Solicitados */
+            --status-produccion: #ffbd7d;    /* En producción (antes En Proceso) */
+            --status-completado: #ade1ad; /* Completado */
+            --status-incompleto: #f194ac; /* Incompleto */
         }
 
         * {
@@ -32,44 +33,86 @@
         body {
             background-color: var(--bg-main);
             color: var(--text-main);
-            padding: 40px;
+            padding: 100px 130px 100px 130px;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
 
-        .calendar-container {
+        .slider-container {
             width: 100%;
-            max-width: 1400px;
-            background-color: var(--bg-main);
+            max-width: 98vw;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* HEADER LAYOUT */
+        .slides-wrapper {
+            display: flex;
+            width: 400%;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .slide {
+            width: 25%;
+            flex-shrink: 0;
+            padding: 0 15px;
+            user-select: none;
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            gap: 20px;
         }
 
         .header-left {
             display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-logo {
+            width: 130px;
+            height: 130px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .header-logo svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            margin-top: 25px;
+        }
+
+        .title-block {
+            display: flex;
             flex-direction: column;
-            gap: 10px;
+            justify-content: space-between;
+            height: 130px;
         }
 
         .main-title {
             font-size: 5.5rem;
             font-weight: 800;
             letter-spacing: -2px;
-            line-height: 0.9;
+            line-height: 0.85;
+            white-space: nowrap;
         }
 
         .title-row {
             display: flex;
             align-items: center;
-            gap: 25px;
-            margin-top: 5px;
+            gap: 40px;
+            margin-top: 10px;
         }
 
         .badge-calendar {
@@ -95,11 +138,10 @@
             display: inline-block;
         }
 
-        /* METADATA / LEGEND */
         .header-right {
             display: grid;
             grid-template-columns: repeat(3, auto);
-            gap: 40px;
+            gap: 30px;
             font-size: 0.85rem;
             background: rgba(255,255,255,0.4);
             padding: 20px;
@@ -131,9 +173,10 @@
         .p2 { background-color: var(--p2-green) !important; }
         .p4 { background-color: var(--p4-pink) !important; }
         .p5 { background-color: var(--p5-blue) !important; }
+        .p6 { background-color: var(--p6-purple) !important; } /* NUEVO: Pauta */
 
-        /* Clases de Estados */
-        .st-proceso { background-color: var(--status-proceso) !important; }
+        /* Clases de Estados - Actualizadas */
+        .st-produccion { background-color: var(--status-produccion) !important; }
         .st-completado { background-color: var(--status-completado) !important; }
         .st-incompleto { background-color: var(--status-incompleto) !important; }
 
@@ -152,28 +195,56 @@
             color: #111111;
         }
 
-        /* GRID / TABLE STYLE */
+        .notes-box {
+            font-size: 0.75rem;
+            color: #555;
+            line-height: 1.3;
+            padding: 6px 8px;
+            border-radius: 4px;
+            height: 85px;
+            width: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .notes-box:focus {
+            outline: none;
+            background-color: #FFFFFF;
+            border: 1px dashed #A0A0A0;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
         .calendar-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
             table-layout: fixed;
             background: #FFFFFF;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            min-width: 900px;
         }
 
         .calendar-table th, .calendar-table td {
             border: 1px solid var(--border-color);
-            padding: 15px;
+            padding: 14px;
             vertical-align: middle;
         }
 
-        /* Configuración de anchos de columnas */
-        .calendar-table th:nth-child(1) { width: 12%; } /* Día */
-        .calendar-table th:nth-child(2) { width: 10%; } /* Fecha */
-        .calendar-table th:nth-child(3) { width: 48%; } /* Enfoque */
-        .calendar-table th:nth-child(4) { width: 15%; } /* Estado */
-        .calendar-table th:nth-child(5) { width: 15%; } /* Formato */
+        .calendar-table th:nth-child(1) { width: 12%; } 
+        .calendar-table th:nth-child(2) { width: 10%; } 
+        .calendar-table th:nth-child(3) { width: 48%; } 
+        .calendar-table th:nth-child(4) { width: 15%; } 
+        .calendar-table th:nth-child(5) { width: 15%; } 
 
         .calendar-table th {
             font-weight: 700;
@@ -191,16 +262,15 @@
             text-align: center;
         }
 
-        /* Alineación especial para el enfoque */
         .calendar-table td.enfoque-cell {
             text-align: left;
             font-weight: 500;
             cursor: text;
+            user-select: text;
         }
 
         .calendar-table td.clickable-cell {
             cursor: pointer;
-            user-select: none;
             transition: opacity 0.15s ease;
         }
 
@@ -208,136 +278,849 @@
             opacity: 0.85;
         }
 
-        /* Estilo interactivo al enfocar edición */
         [contenteditable="true"]:focus {
             outline: 2px dashed #FF5EAA;
             background-color: rgba(254, 247, 242, 0.9);
+        }
+
+        .pagination-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            z-index: 100;
+            background: rgba(250, 247, 242, 0.95);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: opacity 0.5s ease;
+            opacity: 1;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #D1D1D6;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background-color: #48484A;
+            transform: scale(1.25);
+        }
+
+        /* ==========================================
+           RESPONSIVE: MODO TARJETAS EN MÓVIL
+           ========================================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px 100px 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .header-logo {
+                width: 80px;
+                height: 80px;
+                margin-top: 0;
+            }
+
+            .title-block {
+                height: auto;
+                align-items: center;
+            }
+
+            .main-title {
+                font-size: 2.8rem;
+                white-space: normal;
+            }
+
+            .title-row {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+                margin-top: 10px;
+            }
+
+            .badge-calendar {
+                font-size: 1.2rem;
+            }
+
+            .week-oval {
+                font-size: 1rem;
+                padding: 4px 16px;
+            }
+
+            /* ==========================================
+               LEYENDAS EN 2 COLUMNAS EN MÓVIL
+               ========================================== */
+            .header-right {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .header-right .legend-col:last-child {
+                grid-column: span 2;
+            }
+
+            .legend-col h3 {
+                font-size: 0.8rem;
+                margin-bottom: 5px;
+            }
+
+            .platform-pills {
+                min-width: unset;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .pill {
+                font-size: 0.7rem;
+                padding: 2px 10px;
+            }
+
+            .status-list-horizontal {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .status-pill {
+                font-size: 0.7rem;
+                padding: 2px 10px;
+            }
+
+            .notes-box {
+                width: 100%;
+                height: 50px;
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+
+            /* ==========================================
+               MODO TARJETAS
+               ========================================== */
+            .calendar-table {
+                min-width: unset;
+            }
+
+            .calendar-table thead {
+                display: none;
+            }
+
+            .calendar-table,
+            .calendar-table tbody,
+            .calendar-table tr,
+            .calendar-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .calendar-table tr {
+                margin-bottom: 16px;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                padding: 12px;
+                background: #FFFFFF;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            }
+
+            .calendar-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 4px;
+                border: none;
+                border-bottom: 1px solid #f0f0f0;
+                font-size: 0.85rem;
+                text-align: left;
+            }
+
+            .calendar-table td:last-child {
+                border-bottom: none;
+            }
+
+            .calendar-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: #555;
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-right: 10px;
+                flex-shrink: 0;
+            }
+
+            .calendar-table td.enfoque-cell br {
+                display: none;
+            }
+
+            .calendar-table td.enfoque-cell {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .calendar-table td.enfoque-cell::before {
+                align-self: flex-start;
+            }
+
+            .calendar-table td.clickable-cell {
+                justify-content: flex-start;
+                gap: 8px;
+            }
+
+            .calendar-table td[data-label="Día"] {
+                font-weight: 700;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 2.2rem;
+            }
+
+            .badge-calendar {
+                font-size: 1rem;
+            }
+
+            .week-oval {
+                font-size: 0.9rem;
+                padding: 4px 12px;
+            }
+
+            .calendar-table td {
+                font-size: 0.8rem;
+                padding: 4px 2px;
+            }
+
+            .calendar-table td::before {
+                font-size: 0.6rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="calendar-container">
-        
-        <div class="header">
-            <div class="header-left">
-                <div class="main-title" contenteditable="true">Abril 2026</div>
-                <div class="title-row">
-                    <div class="badge-calendar" contenteditable="true">Plan de<br>Contenido</div>
-                    <div class="week-oval" contenteditable="true">Primera Semana</div>
+    <div class="slider-container" id="sliderContainer">
+        <div class="slides-wrapper" id="slidesWrapper" style="transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(0%);">
+            
+            <!-- ================= SEMANA 1 ================= -->
+            <div class="slide">
+                <div class="header">
+                    <div class="header-left">
+                        <div class="header-logo">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 655.75 655.75"><defs><style>.cls-1{fill:#f27019;}</style></defs><g id="Capa_2" data-name="Capa 2"><g id="Capa_1-2" data-name="Capa 1"><path class="cls-1" d="M323.23,560.41,295.62,344.64a5,5,0,0,0-4.32-4.33L75.53,312.71a5,5,0,0,1-1.3-9.57l434-181.95a5,5,0,0,1,6.55,6.54l-181.95,434A5,5,0,0,1,323.23,560.41Z"></path><path class="cls-1" d="M327.88,655.75A327.88,327.88,0,0,1,96,96,327.88,327.88,0,0,1,559.72,559.72,325.71,325.71,0,0,1,327.88,655.75Zm0-639.75C155.91,16,16,155.91,16,327.88S155.91,639.75,327.88,639.75s311.87-139.9,311.87-311.87S499.85,16,327.88,16Z"></path></g></g></svg>
+                        </div>
+                        <div class="title-block">
+                            <div class="main-title" contenteditable="true">Octubre 2026</div>
+                            <div class="title-row">
+                                <div class="badge-calendar" contenteditable="true">Plan de<br>Contenido</div>
+                                <div class="week-oval" contenteditable="true">Primera Semana</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="legend-col">
+                            <h3>FORMATOS</h3>
+                            <div class="platform-pills">
+                                <span class="pill p1" contenteditable="true">Reel</span>
+                                <span class="pill p2" contenteditable="true">Historia</span>
+                                <span class="pill p4" contenteditable="true">Carrucel</span>
+                                <span class="pill p5" contenteditable="true">Motion</span>
+                                <span class="pill p6" contenteditable="true">Pauta</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>ESTADOS</h3>
+                            <div class="status-list-horizontal">
+                                <span class="status-pill st-produccion">En producción</span>
+                                <span class="status-pill st-completado">Completado</span>
+                                <span class="status-pill st-incompleto">Incompleto</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>NOTAS</h3>
+                            <p class="notes-box" contenteditable="true"><br></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Fecha</th>
+                                <th>Enfoque del Contenido</th>
+                                <th>Estado</th>
+                                <th>Formato</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Lunes</td>
+                                <td contenteditable="true" data-label="Fecha">28/09</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Martes</td>
+                                <td contenteditable="true" data-label="Fecha">29/09</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Miércoles</td>
+                                <td contenteditable="true" data-label="Fecha">30/09</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Jueves</td>
+                                <td contenteditable="true" data-label="Fecha">01/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Viernes</td>
+                                <td contenteditable="true" data-label="Fecha">02/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Sábado</td>
+                                <td contenteditable="true" data-label="Fecha">03/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Domingo</td>
+                                <td contenteditable="true" data-label="Fecha">04/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="header-right">
-                <div class="legend-col">
-                    <h3>FORMATOS</h3>
-                    <div class="platform-pills">
-                        <span class="pill p1" contenteditable="true">Reel</span>
-                        <span class="pill p2" contenteditable="true">Historia</span>
-                        <span class="pill p4" contenteditable="true">Carrucel</span>
-                        <span class="pill p5" contenteditable="true">Motion</span>
+            <!-- ================= SEMANA 2 ================= -->
+            <div class="slide">
+                <div class="header">
+                    <div class="header-left">
+                        <div class="header-logo">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 655.75 655.75"><defs><style>.cls-1{fill:#f27019;}</style></defs><g id="Capa_2" data-name="Capa 2"><g id="Capa_1-2" data-name="Capa 1"><path class="cls-1" d="M323.23,560.41,295.62,344.64a5,5,0,0,0-4.32-4.33L75.53,312.71a5,5,0,0,1-1.3-9.57l434-181.95a5,5,0,0,1,6.55,6.54l-181.95,434A5,5,0,0,1,323.23,560.41Z"></path><path class="cls-1" d="M327.88,655.75A327.88,327.88,0,0,1,96,96,327.88,327.88,0,0,1,559.72,559.72,325.71,325.71,0,0,1,327.88,655.75Zm0-639.75C155.91,16,16,155.91,16,327.88S155.91,639.75,327.88,639.75s311.87-139.9,311.87-311.87S499.85,16,327.88,16Z"></path></g></g></svg>
+                        </div>
+                        <div class="title-block">
+                            <div class="main-title" contenteditable="true">Octubre 2026</div>
+                            <div class="title-row">
+                                <div class="badge-calendar" contenteditable="true">Plan de<br>Contenido</div>
+                                <div class="week-oval" contenteditable="true">Segunda Semana</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="legend-col">
+                            <h3>FORMATOS</h3>
+                            <div class="platform-pills">
+                                <span class="pill p1" contenteditable="true">Reel</span>
+                                <span class="pill p2" contenteditable="true">Historia</span>
+                                <span class="pill p4" contenteditable="true">Carrucel</span>
+                                <span class="pill p5" contenteditable="true">Motion</span>
+                                <span class="pill p6" contenteditable="true">Pauta</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>ESTADOS</h3>
+                            <div class="status-list-horizontal">
+                                <span class="status-pill st-produccion">En producción</span>
+                                <span class="status-pill st-completado">Completado</span>
+                                <span class="status-pill st-incompleto">Incompleto</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>NOTAS</h3>
+                            <p class="notes-box" contenteditable="true"><br></p>
+                        </div>
                     </div>
                 </div>
-                <div class="legend-col">
-                    <h3>ESTADOS</h3>
-                    <div class="status-list-horizontal">
-                        <span class="status-pill st-proceso">En Proceso</span>
-                        <span class="status-pill st-completado">Completado</span>
-                        <span class="status-pill st-incompleto">Incompleto</span>
-                    </div>
-                </div>
-                <div class="legend-col" style="max-width: 250px;">
-                    <h3>NOTAS DE CONTROL</h3>
-                    <p style="font-size: 0.8rem; color: #555; line-height: 1.4;">Haz un clic para modificar los textos. Haz <strong>doble clic</strong> en Estado o Formato para cambiar su diseño (ambos incluyen opción vacía).</p>
+
+                <div class="table-responsive">
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Fecha</th>
+                                <th>Enfoque del Contenido</th>
+                                <th>Estado</th>
+                                <th>Formato</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Lunes</td>
+                                <td contenteditable="true" data-label="Fecha">05/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Martes</td>
+                                <td contenteditable="true" data-label="Fecha">06/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Miércoles</td>
+                                <td contenteditable="true" data-label="Fecha">07/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Jueves</td>
+                                <td contenteditable="true" data-label="Fecha">08/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Viernes</td>
+                                <td contenteditable="true" data-label="Fecha">09/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Sábado</td>
+                                <td contenteditable="true" data-label="Fecha">10/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Domingo</td>
+                                <td contenteditable="true" data-label="Fecha">11/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+            <!-- ================= SEMANA 3 ================= -->
+            <div class="slide">
+                <div class="header">
+                    <div class="header-left">
+                        <div class="header-logo">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 655.75 655.75"><defs><style>.cls-1{fill:#f27019;}</style></defs><g id="Capa_2" data-name="Capa 2"><g id="Capa_1-2" data-name="Capa 1"><path class="cls-1" d="M323.23,560.41,295.62,344.64a5,5,0,0,0-4.32-4.33L75.53,312.71a5,5,0,0,1-1.3-9.57l434-181.95a5,5,0,0,1,6.55,6.54l-181.95,434A5,5,0,0,1,323.23,560.41Z"></path><path class="cls-1" d="M327.88,655.75A327.88,327.88,0,0,1,96,96,327.88,327.88,0,0,1,559.72,559.72,325.71,325.71,0,0,1,327.88,655.75Zm0-639.75C155.91,16,16,155.91,16,327.88S155.91,639.75,327.88,639.75s311.87-139.9,311.87-311.87S499.85,16,327.88,16Z"></path></g></g></svg>
+                        </div>
+                        <div class="title-block">
+                            <div class="main-title" contenteditable="true">Octubre 2026</div>
+                            <div class="title-row">
+                                <div class="badge-calendar" contenteditable="true">Plan de<br>Contenido</div>
+                                <div class="week-oval" contenteditable="true">Tercera Semana</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="legend-col">
+                            <h3>FORMATOS</h3>
+                            <div class="platform-pills">
+                                <span class="pill p1" contenteditable="true">Reel</span>
+                                <span class="pill p2" contenteditable="true">Historia</span>
+                                <span class="pill p4" contenteditable="true">Carrucel</span>
+                                <span class="pill p5" contenteditable="true">Motion</span>
+                                <span class="pill p6" contenteditable="true">Pauta</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>ESTADOS</h3>
+                            <div class="status-list-horizontal">
+                                <span class="status-pill st-produccion">En producción</span>
+                                <span class="status-pill st-completado">Completado</span>
+                                <span class="status-pill st-incompleto">Incompleto</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>NOTAS</h3>
+                            <p class="notes-box" contenteditable="true"><br></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Fecha</th>
+                                <th>Enfoque del Contenido</th>
+                                <th>Estado</th>
+                                <th>Formato</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Lunes</td>
+                                <td contenteditable="true" data-label="Fecha">12/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Martes</td>
+                                <td contenteditable="true" data-label="Fecha">13/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Miércoles</td>
+                                <td contenteditable="true" data-label="Fecha">14/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Jueves</td>
+                                <td contenteditable="true" data-label="Fecha">15/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Viernes</td>
+                                <td contenteditable="true" data-label="Fecha">16/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Sábado</td>
+                                <td contenteditable="true" data-label="Fecha">17/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Domingo</td>
+                                <td contenteditable="true" data-label="Fecha">18/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= SEMANA 4 ================= -->
+            <div class="slide">
+                <div class="header">
+                    <div class="header-left">
+                        <div class="header-logo">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 655.75 655.75"><defs><style>.cls-1{fill:#f27019;}</style></defs><g id="Capa_2" data-name="Capa 2"><g id="Capa_1-2" data-name="Capa 1"><path class="cls-1" d="M323.23,560.41,295.62,344.64a5,5,0,0,0-4.32-4.33L75.53,312.71a5,5,0,0,1-1.3-9.57l434-181.95a5,5,0,0,1,6.55,6.54l-181.95,434A5,5,0,0,1,323.23,560.41Z"></path><path class="cls-1" d="M327.88,655.75A327.88,327.88,0,0,1,96,96,327.88,327.88,0,0,1,559.72,559.72,325.71,325.71,0,0,1,327.88,655.75Zm0-639.75C155.91,16,16,155.91,16,327.88S155.91,639.75,327.88,639.75s311.87-139.9,311.87-311.87S499.85,16,327.88,16Z"></path></g></g></svg>
+                        </div>
+                        <div class="title-block">
+                            <div class="main-title" contenteditable="true">Octubre 2026</div>
+                            <div class="title-row">
+                                <div class="badge-calendar" contenteditable="true">Plan de<br>Contenido</div>
+                                <div class="week-oval" contenteditable="true">Cuarta Semana</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="legend-col">
+                            <h3>FORMATOS</h3>
+                            <div class="platform-pills">
+                                <span class="pill p1" contenteditable="true">Reel</span>
+                                <span class="pill p2" contenteditable="true">Historia</span>
+                                <span class="pill p4" contenteditable="true">Carrucel</span>
+                                <span class="pill p5" contenteditable="true">Motion</span>
+                                <span class="pill p6" contenteditable="true">Pauta</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>ESTADOS</h3>
+                            <div class="status-list-horizontal">
+                                <span class="status-pill st-produccion">En producción</span>
+                                <span class="status-pill st-completado">Completado</span>
+                                <span class="status-pill st-incompleto">Incompleto</span>
+                            </div>
+                        </div>
+                        <div class="legend-col">
+                            <h3>NOTAS</h3>
+                            <p class="notes-box" contenteditable="true"><br></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Fecha</th>
+                                <th>Enfoque del Contenido</th>
+                                <th>Estado</th>
+                                <th>Formato</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Lunes</td>
+                                <td contenteditable="true" data-label="Fecha">19/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Martes</td>
+                                <td contenteditable="true" data-label="Fecha">20/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Miércoles</td>
+                                <td contenteditable="true" data-label="Fecha">21/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Jueves</td>
+                                <td contenteditable="true" data-label="Fecha">22/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Viernes</td>
+                                <td contenteditable="true" data-label="Fecha">23/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Sábado</td>
+                                <td contenteditable="true" data-label="Fecha">24/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" data-label="Día">Domingo</td>
+                                <td contenteditable="true" data-label="Fecha">25/10</td>
+                                <td class="enfoque-cell" contenteditable="true" data-label="Enfoque"><br></td>
+                                <td class="clickable-cell" data-type="estado" data-label="Estado"></td>
+                                <td class="clickable-cell" data-type="formato" data-label="Formato"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
+    </div>
 
-        <table class="calendar-table">
-            <thead>
-                <tr>
-                    <th>Día</th>
-                    <th>Fecha</th>
-                    <th>Enfoque del Contenido</th>
-                    <th>Estado</th>
-                    <th>Formato</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td contenteditable="true">Lunes</td>
-                    <td contenteditable="true">30/03</td>
-                    <td class="enfoque-cell" contenteditable="true">Tips estratégicos para optimizar el alcance orgánico semanal.</td>
-                    <td class="clickable-cell st-proceso" data-type="estado">En Proceso</td>
-                    <td class="clickable-cell p1" data-type="formato">Reel</td>
-                </tr>
-                <tr>
-                    <td contenteditable="true">Martes</td>
-                    <td contenteditable="true">31/03</td>
-                    <td class="enfoque-cell" contenteditable="true">Detrás de cámaras: Producción y flujo de diseño visual.</td>
-                    <td class="clickable-cell st-completado" data-type="estado">Completado</td>
-                    <td class="clickable-cell p2" data-type="formato">Historia</td>
-                </tr>
-                <tr>
-                    <td contenteditable="true">Miércoles</td>
-                    <td contenteditable="true">01/04</td>
-                    <td class="enfoque-cell" contenteditable="true">Tutorial paso a paso: Cómo estructurar plantillas interactivas.</td>
-                    <td class="clickable-cell st-incompleto" data-type="estado">Incompleto</td>
-                    <td class="clickable-cell p4" data-type="formato">Carrucel</td>
-                </tr>
-                <tr>
-                    <td contenteditable="true">Jueves</td>
-                    <td contenteditable="true">02/04</td>
-                    <td class="enfoque-cell" contenteditable="true">Análisis de métricas mensuales y toma de decisiones basadas en datos.</td>
-                    <td class="clickable-cell st-proceso" data-type="estado">En Proceso</td>
-                    <td class="clickable-cell p5" data-type="formato">Motion</td>
-                </tr>
-                <tr>
-                    <td contenteditable="true">Viernes</td>
-                    <td contenteditable="true">03/04</td>
-                    <td class="enfoque-cell" contenteditable="true">Preguntas y respuestas con la comunidad en directo.</td>
-                    <td class="clickable-cell st-completado" data-type="estado">Completado</td>
-                    <td class="clickable-cell p2" data-type="formato">Historia</td>
-                </tr>
-                <tr>
-                    <td contenteditable="true">Sábado</td>
-                    <td contenteditable="true">04/04</td>
-                    <td class="enfoque-cell" contenteditable="true">Resumen de las mejores herramientas de automatización de la semana.</td>
-                    <td class="clickable-cell st-proceso" data-type="estado">En Proceso</td>
-                    <td class="clickable-cell p1" data-type="formato">Reel</td>
-                </tr>
-                <tr>
-                    <td contenteditable="true">Domingo</td>
-                    <td contenteditable="true">05/04</td>
-                    <td class="enfoque-cell" contenteditable="true">Frase inspiradora y descanso programado de la comunidad.</td>
-                    <td class="clickable-cell st-completado" data-type="estado">Completado</td>
-                    <td class="clickable-cell p4" data-type="formato">Carrucel</td>
-                </tr>
-            </tbody>
-        </table>
-
+    <div class="pagination-dots" style="transition: opacity 0.3s; opacity: 0;">
+        <span class="dot active" onclick="goToSlide(0)"></span>
+        <span class="dot" onclick="goToSlide(1)"></span>
+        <span class="dot" onclick="goToSlide(2)"></span>
+        <span class="dot" onclick="goToSlide(3)"></span>
     </div>
 
     <script>
+        // ==========================================
+        // 1. FUNCIONALIDAD: MODO DE EDICIÓN
+        // ==========================================
+        const MODO_EDICION = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const editables = document.querySelectorAll('[contenteditable]');
+            editables.forEach(el => {
+                el.setAttribute('contenteditable', MODO_EDICION.toString());
+            });
+        });
+
+        // ==========================================
+        // NAVEGACIÓN Y SLIDER
+        // ==========================================
+        const container = document.getElementById('sliderContainer');
+        const wrapper = document.getElementById('slidesWrapper');
+        const dots = document.querySelectorAll('.dot');
+        
+        let currentSlide = 0;
+        const totalSlides = 4;
+        
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+
+        function goToSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            
+            currentSlide = index;
+            wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+            wrapper.style.transform = `translateX(-${currentSlide * 25}%)`;
+            
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // CONTROL DE TECLADO Y ATAJO DE GUARDADO (CTRL+SHIFT+S)
+        window.addEventListener('keydown', (e) => {
+            // GUARDAR CAMBIOS (CTRL + SHIFT + S)
+            if (e.ctrlKey && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                
+                const editables = document.querySelectorAll('[contenteditable="true"]');
+                editables.forEach(el => {
+                    el.innerHTML = el.innerHTML;
+                });
+
+                const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Plan_Mensual_Octubre_2026.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('¡Archivo guardado! Se ha descargado una copia con todos tus cambios.');
+                return;
+            }
+
+            if (document.activeElement.getAttribute('contenteditable') === 'true') return;
+            
+            if (e.key === 'ArrowLeft') {
+                goToSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight') {
+                goToSlide(currentSlide + 1);
+            }
+        });
+
+        function getX(e) {
+            return e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+        }
+
+        function dragStart(e) {
+            const isMouseEvent = e.type.includes('mouse');
+            const isDesktop = window.innerWidth > 1024;
+
+            if (isDesktop && isMouseEvent && e.target.closest('.calendar-table')) {
+                return;
+            }
+
+            if (e.target.closest('[contenteditable="true"]') || e.target.closest('.clickable-cell') || e.target.closest('.pagination-dots')) return;
+            
+            isDragging = true;
+            startX = getX(e);
+            currentX = startX;
+            wrapper.style.transition = 'none';
+        }
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            currentX = getX(e);
+            const moveX = currentX - startX;
+            
+            const percentageMove = (moveX / container.clientWidth) * 25;
+            let targetPercent = -currentSlide * 25 + percentageMove;
+            
+            if (currentSlide === 0 && moveX > 0) targetPercent = percentageMove * 0.25;
+            if (currentSlide === totalSlides - 1 && moveX < 0) targetPercent = -currentSlide * 25 + percentageMove * 0.25;
+
+            wrapper.style.transform = `translateX(${targetPercent}%)`;
+        }
+
+        function dragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const totalDelta = currentX - startX;
+            const threshold = container.clientWidth * 0.12;
+
+            if (totalDelta < -threshold && currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            } else if (totalDelta > threshold && currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            } else {
+                goToSlide(currentSlide);
+            }
+        }
+
+        window.addEventListener('mousedown', dragStart);
+        window.addEventListener('touchstart', dragStart, { passive: true });
+
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('touchmove', dragMove, { passive: true });
+
+        window.addEventListener('mouseup', dragEnd);
+        window.addEventListener('touchend', dragEnd);
+
+        /* INTERACCIÓN DE CELDAS POR DOBLE CLIC - ACTUALIZADO */
         const clickCells = document.querySelectorAll('.calendar-table td.clickable-cell');
 
         clickCells.forEach(cell => {
             cell.addEventListener('dblclick', function(e) {
+                if (!MODO_EDICION) return;
+
                 e.preventDefault();
+                e.stopPropagation();
                 const cellType = this.getAttribute('data-type');
 
                 if (cellType === 'estado') {
-                    // Ciclo de Estados con nuevos colores asignados
                     const estados = [
-                        { text: 'En Proceso', class: 'st-proceso' },
+                        { text: 'En producción', class: 'st-produccion' },
                         { text: 'Completado', class: 'st-completado' },
                         { text: 'Incompleto', class: 'st-incompleto' },
-                        { text: '', class: '' } // Opción Vacía
+                        { text: '', class: '' }
                     ];
                     
                     let currentText = this.innerText.trim();
                     let currentIndex = estados.findIndex(est => est.text === currentText);
-                    
                     if (currentIndex === -1) currentIndex = 3;
 
                     let nextIndex = (currentIndex + 1) % estados.length;
@@ -352,19 +1135,18 @@
                     }
 
                 } else if (cellType === 'formato') {
-                    // Ciclo de Formatos incluyendo ahora la opción vacía al final
                     const formatos = [
                         { text: 'Reel', class: 'p1' },
                         { text: 'Historia', class: 'p2' },
                         { text: 'Carrucel', class: 'p4' },
                         { text: 'Motion', class: 'p5' },
-                        { text: '', class: '' } // Opción Vacía
+                        { text: 'Pauta', class: 'p6' },
+                        { text: '', class: '' }
                     ];
 
                     let currentText = this.innerText.trim();
                     let currentIndex = formatos.findIndex(form => form.text === currentText);
-                    
-                    if (currentIndex === -1) currentIndex = 4;
+                    if (currentIndex === -1) currentIndex = 5;
 
                     let nextIndex = (currentIndex + 1) % formatos.length;
 
@@ -379,6 +1161,92 @@
                 }
             });
         });
+
+        // ==========================================
+        // AUTOOCULTAR PUNTOS POR INACTIVIDAD (DRAG + FLECHAS)
+        // ==========================================
+        const dotsContainer = document.querySelector('.pagination-dots');
+        let hideTimeout;
+        let isDraggingFlag = false;
+
+        function showDots() {
+            dotsContainer.style.transition = 'opacity 0.3s ease';
+            dotsContainer.style.opacity = '1';
+            clearTimeout(hideTimeout);
+            
+            hideTimeout = setTimeout(() => {
+                dotsContainer.style.opacity = '0';
+            }, 3000);
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('[contenteditable="true"]') || 
+                e.target.closest('.clickable-cell') || 
+                e.target.closest('.pagination-dots')) return;
+            
+            isDraggingFlag = true;
+            showDots();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDraggingFlag) {
+                isDraggingFlag = false;
+                clearTimeout(hideTimeout);
+                hideTimeout = setTimeout(() => {
+                    dotsContainer.style.opacity = '0';
+                }, 1200);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                if (document.activeElement.getAttribute('contenteditable') === 'true') return;
+                showDots();
+            }
+        });
+
+        document.querySelectorAll('.dot').forEach(dot => {
+            dot.addEventListener('click', showDots);
+        });
+
+        setTimeout(() => {
+            dotsContainer.style.transition = 'opacity 1s ease';
+            dotsContainer.style.opacity = '1';
+            hideTimeout = setTimeout(() => {
+                dotsContainer.style.opacity = '0';
+            }, 3000);
+        }, 100);
+
+        // ==========================================
+        // OCULTAR FILAS VACÍAS EN MÓVIL
+        // ==========================================
+        function ocultarFilasVacias() {
+            const isMobile = window.innerWidth <= 768;
+            const filas = document.querySelectorAll('.calendar-table tbody tr');
+            
+            filas.forEach(fila => {
+                const enfoque = fila.querySelector('.enfoque-cell');
+                if (!enfoque) return;
+                
+                const texto = enfoque.innerText.trim();
+                const estaVacia = texto === '' || texto === '\n';
+                
+                if (isMobile && estaVacia) {
+                    fila.style.display = 'none';
+                } else {
+                    fila.style.display = '';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', ocultarFilasVacias);
+        window.addEventListener('resize', ocultarFilasVacias);
+
+        document.querySelectorAll('.dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                setTimeout(ocultarFilasVacias, 100);
+            });
+        });
     </script>
-</body>
-</html>
+
+</body></html>
